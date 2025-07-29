@@ -1,0 +1,10 @@
+{
+  "modid": "TogetherInSpireBenBoosterPack",
+  "name": "TogetherInSpireBenBoosterPack",
+  "author_list": ["Ben"],
+  "description": "使得TogetherInSpire中部分技能牌和能力牌可以对队友使用的mod。",
+  "version": "1.0.0",
+  "sts_version": "12-18-2022",
+  "mts_version": "3.30.3",
+  "dependencies": ["basemod","TogetherInSpire"]
+}
