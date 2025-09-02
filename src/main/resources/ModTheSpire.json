@@ -6,5 +6,5 @@
   "version": "1.0.0",
   "sts_version": "12-18-2022",
   "mts_version": "3.30.3",
-  "dependencies": ["basemod","TogetherInSpire"]
+  "dependencies": ["basemod"]
 }
