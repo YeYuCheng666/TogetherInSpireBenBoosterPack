@@ -1,21 +1,24 @@
 package patches;
 
-import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
 import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.cards.AbstractCard.CardTarget;
+import com.megacrit.cardcrawl.cards.CardGroup;
 import com.megacrit.cardcrawl.cards.CardQueueItem;
 import com.megacrit.cardcrawl.cards.red.PowerThrough;
+import com.megacrit.cardcrawl.cards.status.Wound;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
 import com.megacrit.cardcrawl.monsters.AbstractMonster;
+import com.megacrit.cardcrawl.orbs.Frost;
 import spireTogether.SpireTogetherMod;
 import spireTogether.monsters.CharacterEntity;
 import spireTogether.network.P2P.P2PManager;
 import spireTogether.network.P2P.P2PPlayer;
+import spireTogether.network.objects.items.NetworkCard;
 import spireTogether.util.Reflection;
 import java.util.Iterator;
 
@@ -74,10 +77,11 @@ public class MPPowerThroughCP {
             method = "use"
     )
     public static class PowerThroughUseCP {
-        @SpireInsertPatch(rloc = 1)
-        public static SpireReturn Insert(PowerThrough __instance, AbstractPlayer p, AbstractMonster m)
-        {
+        public static SpireReturn Prefix(PowerThrough __instance, AbstractPlayer p, AbstractMonster m) {
             if (SpireTogetherMod.isConnected && m instanceof CharacterEntity) {
+                for(int i = 0; i < 2; ++i) {
+                    ((CharacterEntity) m).addCard(NetworkCard.Generate(new Wound()), CardGroup.CardGroupType.HAND);
+                }
                 m.addBlock(__instance.block);
                 return SpireReturn.Return();
             } else {

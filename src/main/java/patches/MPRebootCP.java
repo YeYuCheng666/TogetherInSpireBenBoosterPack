@@ -7,9 +7,8 @@ import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.cards.AbstractCard.CardTarget;
 import com.megacrit.cardcrawl.cards.CardQueueItem;
-import com.megacrit.cardcrawl.cards.DamageInfo;
-import com.megacrit.cardcrawl.cards.red.Offering;
-import com.megacrit.cardcrawl.cards.red.Offering;
+import com.megacrit.cardcrawl.cards.blue.Reboot;
+import com.megacrit.cardcrawl.cards.red.PowerThrough;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
 import com.megacrit.cardcrawl.helpers.input.InputHelper;
@@ -21,12 +20,12 @@ import spireTogether.network.P2P.P2PPlayer;
 import spireTogether.util.Reflection;
 import java.util.Iterator;
 
-public class MPOfferingCP {
-    public static boolean IsOffering(AbstractCard o) {
+public class MPRebootCP {
+    public static boolean IsReboot(AbstractCard o) {
         if (o == null) {
             return false;
         } else {
-            if (o instanceof Offering){
+            if (o instanceof Reboot){
                 return true;
             }
             return false;
@@ -46,13 +45,13 @@ public class MPOfferingCP {
             clz = AbstractPlayer.class,
             method = "playCard"
     )
-    public static class OfferingCP {
+    public static class RebootCP {
         public static SpireReturn Prefix(AbstractPlayer __instance) {
-            if (SpireTogetherMod.isConnected && MPOfferingCP.IsOffering(__instance.hoveredCard)) {
+            if (SpireTogetherMod.isConnected && MPRebootCP.IsReboot(__instance.hoveredCard)) {
                 InputHelper.justClickedLeft = false;
                 __instance.hoverEnemyWaitTimer = 1.0F;
                 __instance.hoveredCard.unhover();
-                if (!MPOfferingCP.queueContains(__instance.hoveredCard)) {
+                if (!MPRebootCP.queueContains(__instance.hoveredCard)) {
                     AbstractMonster hoveredMonster = (AbstractMonster)Reflection.getFieldValue("hoveredMonster", __instance);
                     if (hoveredMonster instanceof CharacterEntity) {
                         AbstractDungeon.actionManager.cardQueue.add(new CardQueueItem(__instance.hoveredCard, hoveredMonster));
@@ -72,14 +71,14 @@ public class MPOfferingCP {
     }
 
     @SpirePatch(
-            clz = Offering.class,
+            clz = PowerThrough.class,
             method = "use"
     )
-    public static class OfferingUseCP {
-        public static SpireReturn Prefix(Offering __instance, AbstractPlayer p, AbstractMonster m) {
+    public static class PowerThroughUseCP {
+        @SpireInsertPatch(rloc = 2)
+        public static SpireReturn Insert(PowerThrough __instance, AbstractPlayer p, AbstractMonster m)
+        {
             if (SpireTogetherMod.isConnected && m instanceof CharacterEntity) {
-                m.damage(new DamageInfo(m, 6, DamageInfo.DamageType.HP_LOSS));
-                ((CharacterEntity) m).gainEnergy(2);
                 ((CharacterEntity) m).draw(__instance.magicNumber);
                 return SpireReturn.Return();
             } else {
@@ -94,7 +93,7 @@ public class MPOfferingCP {
     )
     public static class TargetPlayersClass {
         public static void Prefix(AbstractCard __instance) {
-            if (SpireTogetherMod.isConnected && MPOfferingCP.IsOffering(__instance) && AbstractDungeon.player.isDraggingCard && __instance == AbstractDungeon.player.hoveredCard) {
+            if (SpireTogetherMod.isConnected && MPRebootCP.IsReboot(__instance) && AbstractDungeon.player.isDraggingCard && __instance == AbstractDungeon.player.hoveredCard) {
                 boolean shouldNotReset = false;
                 Iterator pI = P2PManager.GetAllPlayers(false);
 

@@ -1,13 +1,12 @@
 package patches;
 
-import com.evacipated.cardcrawl.modthespire.lib.SpireInsertPatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch;
 import com.evacipated.cardcrawl.modthespire.lib.SpirePatch2;
 import com.evacipated.cardcrawl.modthespire.lib.SpireReturn;
 import com.megacrit.cardcrawl.cards.AbstractCard;
 import com.megacrit.cardcrawl.cards.AbstractCard.CardTarget;
 import com.megacrit.cardcrawl.cards.CardQueueItem;
-import com.megacrit.cardcrawl.cards.red.Bloodletting;
+import com.megacrit.cardcrawl.cards.DamageInfo;
 import com.megacrit.cardcrawl.cards.red.Bloodletting;
 import com.megacrit.cardcrawl.characters.AbstractPlayer;
 import com.megacrit.cardcrawl.dungeons.AbstractDungeon;
@@ -75,10 +74,9 @@ public class MPBloodlettingCP {
             method = "use"
     )
     public static class BloodlettingUseCP {
-        @SpireInsertPatch(rloc = 1)
-        public static SpireReturn Insert(Bloodletting __instance, AbstractPlayer p, AbstractMonster m)
-        {
+        public static SpireReturn Prefix(Bloodletting __instance, AbstractPlayer p, AbstractMonster m) {
             if (SpireTogetherMod.isConnected && m instanceof CharacterEntity) {
+                m.damage(new DamageInfo(m, 3, DamageInfo.DamageType.HP_LOSS));
                 ((CharacterEntity) m).gainEnergy(__instance.magicNumber);
                 return SpireReturn.Return();
             } else {
